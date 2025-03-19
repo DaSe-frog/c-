@@ -83,33 +83,46 @@ void stack_sort1(Stack** p) {
 // 2ой способ
 //обмен информацией между текущим и следующим элементами. 
 void stack_sort2(Stack** p) {
-	Stack* t = NULL, *tl;
+	Stack* t = NULL;
+	//Stack* tl = *p;
 
 	int r;
 	do {
-		for (tl = *p; tl->next != t; tl = tl->next) {
-			if (tl->data > tl->next->data) {
-				r = tl->data;
-				tl->data = tl->next->data;
-				tl->next->data = r;
+		for (*p; (*p)->next != t; (*p) = (*p)->next) {
+			if ((*p)->data > (*p)->next->data) {
+				r = (*p)->data;
+				cout << "r = " << r << endl;
+				(*p)->data = (*p)->next->data;
+				cout << "(*p)->data = " << (*p)->data << endl;
+				(*p)->next->data = r;
+				cout << "(*p)->next->data = " << (*p)->next->data << endl;
 			}
 		}
-		t = tl;
-	} while ((*p)->next != t);
+		t = (*p);
+	} while ((*p)->next != NULL);
+	cout << "end of sort2" << endl;
+}
+
+void stack_sort3(Stack** p) {
+	Stack* t = NULL;
+	int temp_stack;
+	for ((*p)->data; (*p)->next != NULL; (*p) = (*p)->next) {
+		if ((*p)->data > (*p)->next->data) {
+			OutStack(*p, &(*p)->next->data);
+		}
+		
+	}
+	s_view(*p);
 }
 
 int main() {
 	Stack* begin = NULL;
 	int i, in, n, kod;
 	while (true) {
-		cout << "\n\t1. Create\n\t2. Add\n\t3. View\n\t4. Delete\n\t5. Individual task\n\t0. Exit\n\t";
+		cout << "\n\t1. Create\n\t2. Add\n\t3. View\n\t4. Delete\n\t5. Individual task\n\t6. Sorting\n\t0. Exit\n\t";
 		cin >> kod;
 		switch (kod) {
-		case 1: case 2:
-			//if ((kod == 1)&& (begin != NULL)) { // если создаем новый стек, то надо освободить память, занятую предыдущим
-				//cout << "Clean Memory!" << endl;
-				//break;
-			//}
+		case 1: case 2:								//create , add
 			cout << "Input the num of elements: ";
 			cin >> n;
 			for (i = 1; i <= n; i++) {
@@ -119,19 +132,31 @@ int main() {
 			if (kod == 1)cout << "Create " << n << " elements." << endl;
 			else  cout << "Add " << n << " elements." << endl;
 			break;
-		case 3:
+		case 3:										// view
 			if (!begin) {
 				cout << "The Stack is empty!" << endl;
 				break;
 			}
 			s_view(begin);
 			break;
-		case 4:
+		case 4:										//delete
 			s_del(&begin);
 			cout << "The memory is free!" << endl;
 			break;
-		case 5:
+			//доделать 5 и 6
+		case 5:										// элементы которые делятся на 5
 			//begin=OutStack(begin);
+			break;
+		case 6:										// сортировка
+			cout << "1" << endl;
+			s_view(begin);
+			stack_sort3(&begin);
+			cout << "2 after _sort3" << endl;
+			s_view(begin);
+			//}
+
+			// обращение к этой функции: s_del(&begin) после выполнения которой указатель на вершину begin будет равен NULL
+		//}
 			break;
 		case 0:
 			if (begin != NULL) s_del(&begin);
