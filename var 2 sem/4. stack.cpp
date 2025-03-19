@@ -59,49 +59,6 @@ void s_del(Stack** p) {
 	// обращение к этой функции: s_del(&begin) после выполнения которой указатель на вершину begin будет равен NULL
 }
 
-// 1ый способ сортировки
-// сортировка однонаправленного списка - перестановка адресов двух соседних элементов, следующих за известным указателем. 
-// первый элемент стека НЕ СОРТИРУЕТСЯ. для того, чтобы и первый элемент оказался отсортированным, следует перед
-// обращением к функции сортировки добавить один элемент в стек, а после сортировки - удалить его
-void stack_sort1(Stack** p) {
-	Stack* t = NULL, * tl, * r;
-	if ((*p)->next->next = NULL) return;
-	do {
-		for (tl = *p; tl->next->next != t; tl = tl->next) {
-			if (tl->next->data > tl->next->next->data) {
-				r = tl->next->next;
-				tl->next->next = r->next;
-				r->next = tl->next;
-				tl->next = r;
-			}
-		}
-		t = tl->next;
-	} while ((*p)->next->next != t);
-	// обращенире: stack_sort(&begin)
-}
-
-// 2ой способ
-//обмен информацией между текущим и следующим элементами. 
-void stack_sort2(Stack** p) {
-	Stack* t = NULL;
-	//Stack* tl = *p;
-
-	int r;
-	do {
-		for (*p; (*p)->next != t; (*p) = (*p)->next) {
-			if ((*p)->data > (*p)->next->data) {
-				r = (*p)->data;
-				cout << "r = " << r << endl;
-				(*p)->data = (*p)->next->data;
-				cout << "(*p)->data = " << (*p)->data << endl;
-				(*p)->next->data = r;
-				cout << "(*p)->next->data = " << (*p)->next->data << endl;
-			}
-		}
-		t = (*p);
-	} while ((*p)->next != NULL);
-	cout << "end of sort2" << endl;
-}
 
 void stack_sort3(Stack** p) {
 	Stack* t = NULL;
@@ -117,7 +74,8 @@ void stack_sort3(Stack** p) {
 
 int main() {
 	Stack* begin = NULL;
-	int i, in, n, kod;
+	Stack* temp_begin = NULL;
+	int i, in, n, kod, el;
 	while (true) {
 		cout << "\n\t1. Create\n\t2. Add\n\t3. View\n\t4. Delete\n\t5. Individual task\n\t6. Sorting\n\t0. Exit\n\t";
 		cin >> kod;
@@ -143,10 +101,24 @@ int main() {
 			s_del(&begin);
 			cout << "The memory is free!" << endl;
 			break;
-			//доделать 5 и 6
-		case 5:										// элементы которые делятся на 5
-			//begin=OutStack(begin);
+			
+		case 5:			
+			while (begin  != NULL) { 
+				if (begin->data % 5 == 0) {
+					if (begin->data % 10 != 0)	cout << "Delete " << begin->data << endl;
+					else temp_begin = s_push(temp_begin, begin->data);
+				}
+				else temp_begin = s_push(temp_begin, begin->data);
+				begin = begin->next;
+			}
+
+			while (temp_begin != NULL) {
+				begin = s_push(begin, temp_begin->data);
+				temp_begin = temp_begin->next;
+			}
+			delete temp_begin;
 			break;
+			//доделать  6
 		case 6:										// сортировка
 			cout << "1" << endl;
 			s_view(begin);
