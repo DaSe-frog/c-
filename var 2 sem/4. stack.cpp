@@ -74,6 +74,9 @@ int main() {
 		case 1: case 2:								//create , add
 			cout << "Input the num of elements: ";
 			cin >> n;
+			if ((kod == 1) && (begin != NULL)) {
+				s_del(&begin);
+			}
 			for (i = 1; i <= n; i++) {
 				in = rand() % 101 - 50;
 				begin = s_push(begin, in);
@@ -97,6 +100,10 @@ int main() {
 
 		
 		case 5:
+			if (!begin) {
+				cout << "The Stack is empty!" << endl;
+				break;
+			}
 			while (begin != NULL) {
 				if (begin->data % 5 == 0) {
 					if (begin->data % 10 != 0)	cout << "Delete " << begin->data << endl;
@@ -116,6 +123,10 @@ int main() {
 			break;
 		
 		case 6:										// сортировка
+			if (!begin) {
+				cout << "The Stack is empty!" << endl;
+				break;
+			}
 			StackSort(begin);
 			cout << "\tNew stack: " << endl;
 			s_view(begin);
