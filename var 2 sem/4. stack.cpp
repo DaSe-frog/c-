@@ -83,6 +83,8 @@ int main() {
 			}
 			if (kod == 1)cout << "Create " << n << " elements." << endl;
 			else  cout << "Add " << n << " elements." << endl;
+			cout << "The stack: " << endl;
+			s_view(begin);
 			break;
 		
 		case 3:										// view
