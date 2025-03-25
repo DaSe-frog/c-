@@ -17,12 +17,12 @@ struct atc {
 };
 
 struct memory {
-	int code;
+	int code = 0;
 	string city;
-	int time[3] = { 0,0,0 };
-	double tarif = 0;
-	double sum = 0;
-
+	int time=0;
+	double tarif=0;
+	double sum=0;
+	int time_all[3] = { 0,0,0 };
 };
 
 void QuickSort(atc contact[], int left, int right) { //сортируем по коду города
@@ -46,40 +46,34 @@ void QuickSort(atc contact[], int left, int right) { //сортируем по �
 	QuickSort(contact, i, right);
 }
 
-void LinearSearch(atc contact[], int N, memory a[],int count) {
-	int k = 0;
-	int temp = 0;
-	/*for (int i = 0; i < N; i++) {
-		if (contact[i].city == x) {
-			if (temp == 0) {
-				cout << setw(6) << right << " #"
-					<< setw(20) << left << "Дата разговора" << "|"
-					<< setw(15) << "Код" << "|"
-					<< setw(20) << "Город" << "|"
-					<< setw(9) << "Время разговора" << "|"
-					<< setw(25) << "Тариф" << "|"
-					<< setw(20) << "Номер города" << "|"
-					<< setw(20) << "Номер абонента" << "|"
-					<< setw(18) << "" << "|" << endl;
-				cout << "-----------------------------------------------------------------------------------------------------------------" << endl;
-			}
-			cout << setw(5) << right << i + 1 << "."
-				<< right << setw(10) << contact[i].date[0] << "."
-				 << contact[i].date[1] << "."
-				<< contact[i].date[2] << "|"
-				<< setw(15) << contact[i].code << "|"
-				<< setw(15) << contact[i].city << "|"
-				<< setw(20) << contact[i].time[0] << setw(2) << "." << contact[i].time[1] << setw(2) << "." << contact[i].time[2] << "|"
-				<< setw(9) << contact[i].tarif << "|"
-				<< setw(25) << contact[i].city_num << "|"
-				<< setw(25) << contact[i].subscriber_num << "|"
-				<< endl;
-			k++;
-			temp++;
+void LinearSearch(atc contact[], int N, memory task[], int count) {
+	int j = 0;
+	for (int i = 1; i < N; i++) {
+		if (contact[i].code == contact[i - 1].code) {
+			task[j].time += contact[i].time[0] * 3600 + contact[i].time[1] * 60 + contact[i].time[2];
+			task[j].code = contact[i].code;
+			task[j].city = contact[i].city;
+			task[j].tarif = contact[i].tarif;
+			task[j].sum += task[j].tarif * task[j].time;
+
+			task[j].time_all[0] = task[j].time / 3600;
+			task[j].time_all[1] = task[j].time % 3600;
+			task[j].time_all[2] = task[j].time_all[1] % 60;
+			task[j].time_all[1] = task[j].time_all[1] / 60;
 		}
-	}*/
-	if (k == 0) {
-		cout << "Нет такого города." << endl;
+		else {
+			j++;
+			task[j].time += contact[i].time[0] * 3600 + contact[i].time[1] * 60 + contact[i].time[2];
+			task[j].code = contact[i].code;
+			task[j].city = contact[i].city;
+			task[j].tarif = contact[i].tarif;
+			task[j].sum += task[j].tarif * task[j].time;
+
+			task[j].time_all[0] = task[j].time / 3600;
+			task[j].time_all[1] = task[j].time % 3600;
+			task[j].time_all[2] = task[j].time_all[1] % 60;
+			task[j].time_all[1] = task[j].time_all[1] / 60;
+		}
 	}
 }
 
@@ -99,18 +93,18 @@ void OutputTableHead() {
 
 void OutputTableBody(atc contact[], int N) {
 	for (int i = 0; i < N; i++) {
-		cout << setw(3) << right << i + 1 << "."
-			<< right << setw(9);
-		if (contact[i].date[0] < 10) cout << "0" << contact[i].date[0] << ".";
-		else cout << contact[i].date[0] << ".";
+		cout << setw(3) << right << i + 1 << ".";
+
+		if (contact[i].date[0] < 10)cout << right << setw(8) << "0" << contact[i].date[0] << ".";
+		else cout << right << setw(9) << contact[i].date[0] << ".";
 		if (contact[i].date[1] < 10) cout << "0" << contact[i].date[1] << ".";
 		else cout << contact[i].date[1] << ".";
 		cout
 			<< contact[i].date[2] << "|"
 			<< setw(6) << contact[i].code << "|"
-			<< setw(10) << contact[i].city << "|" << setw(11);
-		if (contact[i].time[0] < 10) cout << "0" << contact[i].time[0] << ".";
-		else cout << contact[i].time[0] << ".";
+			<< setw(10) << contact[i].city << "|";
+		if (contact[i].time[0] < 10) cout << setw(10) << "0" << contact[i].time[0] << ".";
+		else cout << setw(11) << contact[i].time[0] << ".";
 		if (contact[i].time[1] < 10) cout << "0" << contact[i].time[1] << ".";
 		else cout << contact[i].time[1] << ".";
 		if (contact[i].time[2] < 10) cout << "0" << contact[i].time[2] << " ";
@@ -167,7 +161,11 @@ void FileEdition(string file_name) { // работа с файлом
 
 					cout << "Сохранить изменения в файле?\n1 - да,\n 2 - нет" << endl;
 					cin >> temp_answ;
-					if (temp_answ == 1) file << "\n" << t_date << " " << t_code << " " << t_city << " " << t_time << " " << t_tarif << " " << t_city_num << " " << t_subscriber_num;
+
+					if (temp_answ == 1) {
+						if (!file.eof()) file << "\n";
+						file << t_date << " " << t_code << " " << t_city << " " << t_time << " " << t_tarif << " " << t_city_num << " " << t_subscriber_num;
+					}
 					else cout << "Данные не были добавлены в файл!" << endl;
 					cout << "Желаете добавить еще запись? \n1 - да\n2 - нет" << endl;
 					cin >> answer1;
@@ -415,35 +413,48 @@ void FileEdition(string file_name) { // работа с файлом
 						temp_answ = 0;
 					}
 
-					//---------------------------------------закончила тут
 					if (answer == 5) {
 						OutputTableBody(contact, N);
 						QuickSort(contact, 0, N - 1);
-						cout << endl << "сортировка по коду города: " << endl;
+
+						cout << endl << endl << "сортировка по коду города: " << endl;
 						OutputTableHead();
 						OutputTableBody(contact, N);
+						cout << endl;
 						int count = 1;
 						for (i = 1; i < N; i++) {
-							//cout << count;
-							if (contact[i].code != contact[i-1].code) count++;
+							if (contact[i].code != contact[i - 1].code) count++;
 						}
 
-						cout << count;
-						/*
-						struct memory {
-								int code;
-								string city;
-								int time[3] = { 0,0,0 };
-								double tarif = 0;
-								double sum = 0;
-
-							};
-						
-						*/
 						memory* task = new memory[count];
-						
-						
-						LinearSearch(contact, N,task,count);
+						int j = 0;
+						task[0].code = contact[0].code;
+						task[0].city = contact[0].city;
+						task[0].tarif = contact[0].tarif;
+						task[0].time = contact[0].time[0] * 3600 + contact[0].time[1] * 60 + contact[0].time[2];
+						task[0].sum += task[0].tarif * task[0].time;
+						task[j].time_all[0] = task[j].time / 3600;
+						task[j].time_all[1] = task[j].time % 3600;
+						task[j].time_all[2] = task[j].time_all[1] % 60;
+						task[j].time_all[1] = task[j].time_all[1] / 60;
+						LinearSearch(contact, N, task, count);
+
+						cout << endl << setw(6) << " code |" << setw(10) << " city |" << setw(8) << "tarif |" << setw(12) << "all time,s  |" << setw(11) << "hh.mm.ss |" << setw(11) << "sum |" << endl << "----------------------------------------------------------- " << endl;
+						for (j = 0; j < count; j++) {
+							cout << setw(6) << task[j].code << "|"
+								<< setw(9) << task[j].city << "|"
+								<< setw(7) << task[j].tarif << "|"
+								<< setw(12) << task[j].time << "|";
+							if (task[j].time_all[0] < 10)cout << setw(3) << "0" << task[j].time_all[0] << ".";
+							else cout << setw(4) << task[j].time_all[0] << ".";
+							if (task[j].time_all[1] < 10)cout << "0" << task[j].time_all[1] << ".";
+							else cout << task[j].time_all[1] << ".";
+							if (task[j].time_all[2] < 10)cout << "0" << task[j].time_all[2] << "|";
+							else cout << task[j].time_all[2] << "|";
+							cout << setw(10) << task[j].sum << "|" << endl;
+						}
+						cout << endl;
+
 					}
 				}
 			}
@@ -457,6 +468,7 @@ int main() {
 
 	setlocale(LC_ALL, "RU");
 	system("chcp 1251");
+
 
 	int answer, N = 0, i = 0;
 	string file_name;
@@ -484,7 +496,7 @@ int main() {
 			}
 		}
 
-		if (answer == 2) {					//	Работа с существующим файлом
+		else if (answer == 2) {					//	Работа с существующим файлом
 			FileEdition(file_name);
 		}
 		else cout << "Неверный ответ!" << endl;
