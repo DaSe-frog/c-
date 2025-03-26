@@ -1,5 +1,5 @@
 /*
-Написать программу по созданию, добавлению (в начало, в конец), 
+Написать программу по созданию, добавлению (в начало, в конец),
 просмотру (с начала, с конца) и решению приведенной в подразделе 3.3.задачи для  двунаправленных линейных списков
 Из созданного списка удалить элементы, заканчивающиеся на цифру 5
 
@@ -8,7 +8,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits>
+
 using namespace std;
+
 struct Spisok {
 	int info;
 	Spisok* next;
@@ -17,7 +19,7 @@ struct Spisok {
 } *t;
 
 void CreateList(Spisok** begin_spisok, Spisok** end_spisok, int in) { // создание первого элемента
-	t = new Spisok;
+	Spisok* t = new Spisok;
 	t->info = in;
 	t->next = t->prev = NULL;
 	*begin_spisok = *end_spisok = t;
@@ -40,16 +42,29 @@ void AddElement(int kod, Spisok** begin_spisok, Spisok** end_spisok, int in) {
 		*end_spisok = t;
 	}
 }
+
 //просмотр списка
-void ViewList(int kod, Spisok* t) {
-	while (t != NULL) {
-		cout << t->info << endl;
-		if (kod == 0) t = t->next;
-		else t = t->prev;
+void ViewList(int kod, Spisok** begin_spisok, Spisok** end_spisok) {
+	//просмотр списка с начала
+	if (kod == 1) {
+		Spisok* t = *begin_spisok ;
+		while (t != NULL) {
+			cout << t->info << endl;
+			t = t->next;
+		}
+	}
+
+	//просмотр списка с конца
+	if (kod == 2) {
+		Spisok* t = *end_spisok;
+		while (t != NULL) {
+			cout << t->info << endl;
+			t = t->prev;
+		}
 	}
 }
 void DelList(Spisok** p) { //удаление списка
-	//Spisok* t;
+	Spisok* t;
 	while (*p != NULL) {
 		t = *p;
 		*p = (*p)->next;
@@ -58,87 +73,106 @@ void DelList(Spisok** p) { //удаление списка
 }
 
 int main() {
-	Spisok* begin, * end, * t,*temp_begin;
-	int i, in, n, kod, kod1;
-	char Str[2][10] = { "Begin", "End" };
+	Spisok* begin = NULL, * end = NULL, * key = NULL;
+	int i, in, n, kod, kod1, num;
 	while (true) {
 		cout << "\n\t1. Create\n\t2. Add\n\t3. View\n\t4. Delete\n\t5. Individual task\n\t6. Sorting\n\t0. Exit\n\t";
 		cin >> kod;
+
 		switch (kod) {
+
 		case 1://Create
-			if (begin != 0) cout << "the list isn't empty!"; break;
-			cout << "Begin info: "; cin >> in;
+			if (begin != 0) {
+				cout << "the list isn't empty!";
+				break;
+			}
+			in = rand() % 101 - 50;
 			CreateList(&begin, &end, in);
 			cout << "Create Begin = " << begin->info << endl;
 			break;
+
 		case 2://add
-			cout << "Enter indo: "; cin >> in;
-			cout << "add info\n0. to the begin of the list\n2. to tne end of the list" << endl; cin >> kod1;
-			AddElement(kod1, &begin, &end, in);
-			if (kod1 == 0) t = begin;
-			else t = end;
-			cout << "Add to " << Str[kod1] << " " << t->info << endl;
+			cout << "add info\n1. to the begin of the list\n2. to the end of the list" << endl;
+			cin >> kod1;
+			if (kod1 != 1 && kod1 != 2) {
+				cout << "Error answer!";
+				break;
+			}
+			cout << "Enter num of elements: "; cin >> num;
+			for (i = 1; i <= num; i++) {
+				in = rand() % 101 - 50;
+				AddElement(kod1, &begin, &end, in);
+				cout << "Add " << t->info << endl;
+			}
 			break;
+
 		case 3://view
-			if (!begin) cout << "The list is empty!" << endl; break;
-			cout << "1 - View from begin\n2 - View from the end " << endl; cin >> kod1;
+			if (!begin) {
+				cout << "The list is empty!" << endl;
+				break;
+			}
+			cout << "1 - View from begin\n2 - View from the end " << endl;
+			cin >> kod1;
 			if (kod1 == 1) {
-				t = begin;
 				cout << "\tFrom begin: " << endl;
+				ViewList(kod1, &begin, &end);
 			}
-			if (kod1 == 2) {
-				t = begin;
+			else if (kod1 == 2) {
 				cout << "\tFrom end: " << endl;
+				ViewList(kod1, &begin, &end);
 			}
-			else cout << "error answer!" << endl; break;
-			ViewList(kod1, t);
+			else {
+				cout << "error answer!" << endl;
+				break;
+			}
+
 			break;
+
 		case 4://delete
 			DelList(&begin);
-			break;/*
-		case 5:
-			
-			if (!begin) {
-				cout << "The List is empty!" << endl;
-				break;
-			}
-			while (begin != NULL) {
-				if (begin->info % 5 == 0) {
-					if (begin->info % 10 != 0)	cout << "Delete " << begin->info << endl;
-					else temp_begin = AddElement(1, &begin, &end, begin->info);
+			break;
+
+		case 5: //удалить из списка элементы заканчивающиеся на 5
+			t = begin; //текущий указатель выставляем на начало списка
+			ViewList(1, &begin, &end);
+			while (t != NULL) {
+				if (t->info % 5 == 0) {
+					if (t->info % 10 != 0) {
+						key = t;
+						if (key == begin) {
+							t = t->next;
+							t->prev = NULL;
+						}
+						else if (key == end) {
+							end = end->prev;
+							end->next = NULL;
+						}
+						else {
+							key->prev->next = key->next;
+							key->next->prev = key->prev;
+						}
+					}
 				}
-				else temp_begin = s_push(temp_begin, begin->data);
-				begin = begin->next;
+				t = t->next;
 			}
 
-			while (temp_begin != NULL) {
-				begin = s_push(begin, temp_begin->data);
-				temp_begin = temp_begin->next;
-			}
-			delete temp_begin;
-			cout << "\tNew stack: " << endl;
-			s_view(begin);
-			break;
-
-			*/
-		case 6:
-			/*
-			if (!begin) {
-				cout << "The Stack is empty!" << endl;
+			if (key == NULL) {
+				cout << "There are no items in this list that end in 5" << endl;
 				break;
 			}
-			StackSort(begin);
+
 			cout << "\tNew stack: " << endl;
-			s_view(begin);
+			ViewList(1, &begin, &end);
 			break;
 
-			*/
 		case 0://exit
 			if (begin != NULL) DelList(&begin);
 			exit(0);
+
 		default:
 			cout << "The answer doesn't exist. Try again!";
 			break;
 		}
 	}
+	return 0;
 }
