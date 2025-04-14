@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-#include <locale.h>
 
 
 
@@ -136,44 +135,57 @@ void FileEdition(string file_name) { // работа с файлом
 		if (answer == 2) { // 2 - добавить запись в файл
 			int answer1 = 1;
 
-			ofstream file;                                                 // поток записи в файл
-			file.open(file_name, ios::app);                                // открыть файл в режиме app, чтобы указатель переместился в конец файла и предыдущие данные не стерлись
-			if (!file.is_open()) {
-				cout << "Ошибка. Файл не был открыт!" << endl;
-			}
+			int oN = 0;
+			ifstream file;
+			file.open(file_name);
+			if (!file.is_open()) cout << "Ошибка. Файл не был открыт!" << endl;
+
 			else {
-				string t_date, t_code, t_city, t_time, t_city_num, t_subscriber_num;
-				double t_tarif;
-				answer1 = 1;
-				while (answer1 == 1) {
-					cout << "Дата разговора (в формате ДД.ММ.ГГ 13.04.2025): " << endl;
-					cin >> t_date;
-					cout << "Код города: " << endl;
-					cin >> t_code;
-					cout << "Город: " << endl;
-					cin >> t_city;
-					cout << "Продолжительность разговора (в формате ЧАСЫ.МИНУТЫ.СЕКУНДЫ): " << endl;
-					cin >> t_time;
-					cout << "Тариф: " << endl;
-					cin >> t_tarif;
-					cout << "Номер города: " << endl;
-					cin >> t_city_num;
-					cout << "Номер абонента: " << endl;
-					cin >> t_subscriber_num;
-
-					cout << "Сохранить изменения в файле?\n1 - да,\n 2 - нет" << endl;
-					cin >> temp_answ;
-
-					if (temp_answ == 1) {
-						if (!file.eof()) file << "\n";
-						file << t_date << " " << t_code << " " << t_city << " " << t_time << " " << t_tarif << " " << t_city_num << " " << t_subscriber_num;
-					}
-					else cout << "Данные не были добавлены в файл!" << endl;
-					cout << "Желаете добавить еще запись? \n1 - да\n2 - нет" << endl;
-					cin >> answer1;
-					if ((temp_answ == 1) && (answer1 == 1)) file << "\n";
-				}
+				file.seekg(0);
+				string f_str;
+				getline(file, f_str);
+				if (f_str == "") oN = 0;
+				else oN = 1;
 				file.close();
+
+				ofstream file;                                                 // поток записи в файл
+				file.open(file_name, ios::app);                                // открыть файл в режиме app, чтобы указатель переместился в конец файла и предыдущие данные не стерлись
+				if (!file.is_open()) {
+					cout << "Ошибка. Файл не был открыт!" << endl;
+				}
+				else {
+					string t_date, t_code, t_city, t_time, t_city_num, t_subscriber_num;
+					double t_tarif;
+					answer1 = 1;
+					while (answer1 == 1) {
+						cout << "Дата разговора (в формате ДД.ММ.ГГ 13.04.2025): " << endl;
+						cin >> t_date;
+						cout << "Код города: " << endl;
+						cin >> t_code;
+						cout << "Город: " << endl;
+						cin >> t_city;
+						cout << "Продолжительность разговора (в формате ЧАСЫ.МИНУТЫ.СЕКУНДЫ): " << endl;
+						cin >> t_time;
+						cout << "Тариф: " << endl;
+						cin >> t_tarif;
+						cout << "Номер города: " << endl;
+						cin >> t_city_num;
+						cout << "Номер абонента: " << endl;
+						cin >> t_subscriber_num;
+						cout << "Сохранить изменения в файле?\n1 - да,\n 2 - нет" << endl;
+						cin >> temp_answ;
+
+						if (temp_answ == 1) {
+							if (oN != 0)  file << "\n";
+							else oN = 1;
+							file << t_date << " " << t_code << " " << t_city << " " << t_time << " " << t_tarif << " " << t_city_num << " " << t_subscriber_num;
+						}
+						else cout << "Данные не были добавлены в файл!" << endl;
+						cout << "Желаете добавить еще запись? \n1 - да\n2 - нет" << endl;
+						cin >> answer1;
+					}
+					file.close();
+				}
 			}
 		}
 
@@ -193,7 +205,7 @@ void FileEdition(string file_name) { // работа с файлом
 				int oN = 0;
 				string f_str;
 				getline(file, f_str);
-				if (file.eof() || f_str == "") cout << "Файл пуст!" << endl;
+				if (f_str == "") cout << "Файл пуст!" << endl;
 				else {
 					file.seekg(0);
 					while (!file.eof()) {					//	считаем количество строк в файле
